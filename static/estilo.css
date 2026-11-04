@@ -1,0 +1,306 @@
+/* Fuga Lógica: crepúsculo na rodovia, com a placa verde de sinalização como painel de jogo. */
+
+:root {
+  --fundo: #231f45;
+  --ceu-alto: #2f2a5a;
+  --ceu-baixo: #ee8a5e;
+  --colina: #2a2450;
+  --asfalto: #3d3f4b;
+  --meio-fio: #d9d3bf;
+  --tinta: #f4c430;
+  --placa: #0d6b4b;
+  --papel: #f7f6ef;
+  --azul: #2f6fe0;
+  --vermelho: #e0463d;
+  --verde: #3cc486;
+  --texto-escuro: #1f1b3d;
+  --fonte: "Trebuchet MS", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --fonte-formula: "Cambria Math", "STIX Two Math", "Segoe UI Symbol", "DejaVu Serif", serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--fundo);
+  color: var(--papel);
+  font-family: var(--fonte);
+  line-height: 1.45;
+}
+
+button { font: inherit; cursor: pointer; }
+button:focus-visible { outline: 3px solid var(--papel); outline-offset: 3px; }
+
+.jogo { max-width: 960px; margin: 0 auto; padding: 1rem; }
+
+/* ---------- Cabeçalho e medidor ---------- */
+
+.hud {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 1rem 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.marca { margin: 0; font-size: 1.35rem; letter-spacing: 0.01em; }
+.nivel { margin: 0; font-size: 1.05rem; }
+
+.medidor { display: flex; align-items: center; gap: 0.6rem; font-size: 0.8rem; opacity: 0.9; }
+.trilho { flex: 1; height: 14px; border-radius: 7px; background: rgba(255, 255, 255, 0.18); overflow: hidden; }
+.enchimento {
+  height: 100%;
+  width: 40%;
+  border-radius: 7px;
+  background: var(--tinta);
+  transition: width 0.3s linear, background-color 0.3s;
+}
+.perigo .enchimento { background: var(--vermelho); animation: pulso 0.5s infinite alternate; }
+
+.leitura { margin: 0.3rem 0 0; font-size: 0.95rem; }
+.leitura strong { font-size: 1.4rem; }
+.meta { opacity: 0.75; font-size: 0.85rem; }
+
+@keyframes pulso { from { opacity: 1; } to { opacity: 0.55; } }
+
+/* ---------- Cena ---------- */
+
+.cena {
+  position: relative;
+  height: clamp(220px, 34vw, 300px);
+  overflow: hidden;
+  border-radius: 18px;
+  background: linear-gradient(var(--ceu-alto), var(--ceu-baixo) 66%);
+}
+
+.sol {
+  position: absolute;
+  left: 18%;
+  bottom: 64px;
+  width: clamp(70px, 12vw, 110px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #ffd9a0;
+  opacity: 0.9;
+}
+
+.colinas { position: absolute; left: 0; bottom: 76px; width: 100%; height: 90px; fill: var(--colina); }
+
+.estrada {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 88px;
+  background: var(--asfalto);
+  border-top: 5px solid var(--meio-fio);
+}
+
+.faixas {
+  position: absolute;
+  left: 0; right: 0; top: 52%;
+  height: 5px;
+  background: repeating-linear-gradient(90deg, var(--tinta) 0 46px, transparent 46px 92px);
+  animation: correr 0.45s linear infinite paused;
+}
+.andando .faixas { animation-play-state: running; }
+
+@keyframes correr { from { background-position: 0 0; } to { background-position: -92px 0; } }
+
+.veiculo {
+  position: absolute;
+  bottom: 16px;
+  left: 0;
+  width: clamp(110px, 17vw, 160px);
+}
+.veiculo svg { display: block; width: 100%; height: auto; overflow: visible; }
+
+.roda { fill: #15131f; }
+.miolo { fill: #9a98a8; }
+.vidro { fill: #bfe0f2; opacity: 0.9; }
+.corpo-carro { fill: var(--tinta); }
+.farol { fill: #fff6c9; }
+.corpo-viatura { fill: #f1f1f4; }
+.faixa-viatura { fill: #1b2a52; }
+.luz { opacity: 0.25; }
+.luz-azul { fill: var(--azul); animation: sirene 0.5s steps(1) infinite; }
+.luz-vermelha { fill: var(--vermelho); animation: sirene 0.5s steps(1) infinite reverse; }
+.perigo .luz-azul, .perigo .luz-vermelha { animation-duration: 0.22s; }
+
+@keyframes sirene { 0% { opacity: 1; } 50% { opacity: 0.2; } }
+
+.viatura { transition: transform 0.3s linear; left: 0; }
+.andando .carro svg { animation: balanco 0.35s ease-in-out infinite alternate; }
+@keyframes balanco { from { transform: translateY(0); } to { transform: translateY(-2px); } }
+
+/* Sinal de trânsito */
+.semaforo {
+  position: absolute;
+  right: 4%;
+  bottom: 70px;
+  width: clamp(40px, 7vw, 56px);
+  transition: transform 0.9s cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+.semaforo svg { display: block; width: 100%; height: auto; }
+.semaforo[data-fase="saindo"] { transform: translateX(-120vw); transition: transform 1.1s ease-in; }
+.semaforo[data-fase="fora"] { transform: translateX(40vw); transition: none; }
+.semaforo[data-fase="parado"] { transform: none; }
+
+.poste { fill: #6b6a78; }
+.caixa { fill: #1d1b2e; }
+.lampada { fill: #3b3947; }
+.semaforo[data-luz="vermelha"] .l-vermelha { fill: var(--vermelho); }
+.semaforo[data-luz="verde"] .l-verde { fill: var(--verde); }
+
+/* ---------- Painel (placa verde de rodovia) ---------- */
+
+.painel { margin-top: 1rem; min-height: 120px; }
+
+.placa {
+  background: var(--placa);
+  border-radius: 20px;
+  padding: 1.6rem 1.8rem;
+  box-shadow: inset 0 0 0 4px var(--placa), inset 0 0 0 7px var(--papel);
+}
+
+.placa[hidden] { display: none; }
+.placa.tremer { animation: tremer 0.35s; }
+@keyframes tremer { 20% { transform: translateX(-6px); } 50% { transform: translateX(6px); } 80% { transform: translateX(-3px); } }
+
+.placa-topo { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; flex-wrap: wrap; }
+.placa h2 { margin: 0; font-size: 1.05rem; }
+.cronometro { font-size: 0.95rem; }
+.cronometro strong { font-size: 1.05rem; }
+
+.enunciado { margin: 0.5rem 0 1rem; max-width: 62ch; }
+.rotulo { margin: 1rem 0 0.3rem; font-size: 0.9rem; opacity: 0.9; }
+
+.formula {
+  margin: 0.3rem 0 1.1rem;
+  font-family: var(--fonte-formula);
+  font-size: clamp(1.7rem, 5vw, 2.7rem);
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+.formula.pequena { font-size: clamp(1.3rem, 3.6vw, 1.9rem); margin-bottom: 0.4rem; }
+
+.interruptores { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-bottom: 1.2rem; }
+.variavel {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.4rem 0.5rem 0.4rem 0.9rem;
+  border: 2px solid rgba(247, 246, 239, 0.45);
+  border-radius: 14px;
+}
+.variavel.fixa { border-style: dashed; }
+.variavel .nome { font-family: var(--fonte-formula); font-size: 1.5rem; }
+.variavel .dica { font-size: 0.8rem; opacity: 0.85; }
+
+.chave {
+  min-width: 3.4rem;
+  padding: 0.45rem 0.8rem;
+  border: 2px solid var(--papel);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--papel);
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+.chave[aria-pressed="true"] { background: var(--tinta); border-color: var(--tinta); color: var(--texto-escuro); }
+.valor-fixo {
+  min-width: 3.4rem;
+  padding: 0.45rem 0.8rem;
+  text-align: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+  opacity: 0.8;
+}
+
+.premissas { margin: 0 0 0.5rem; padding-left: 1.2rem; font-family: var(--fonte-formula); font-size: 1.5rem; }
+
+.opcoes { display: grid; gap: 0.6rem; margin-bottom: 1.2rem; }
+.opcao {
+  text-align: left;
+  padding: 0.7rem 1rem;
+  border: 2px solid rgba(247, 246, 239, 0.55);
+  border-radius: 12px;
+  background: transparent;
+  color: var(--papel);
+  font-family: var(--fonte-formula);
+  font-size: 1.4rem;
+}
+.opcao[aria-pressed="true"] { background: var(--papel); color: var(--placa); border-color: var(--papel); }
+
+.acoes { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+
+.botao {
+  padding: 0.8rem 1.7rem;
+  border: 0;
+  border-radius: 12px;
+  background: var(--tinta);
+  color: var(--texto-escuro);
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+.botao:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.retorno { margin: 0; padding: 0.5rem 0.9rem; border-radius: 10px; font-size: 0.95rem; }
+.retorno:empty { display: none; }
+.retorno.ok { background: #083f2d; }
+.retorno.erro { background: #7d1f19; }
+
+/* ---------- Telas de início e fim ---------- */
+
+.tela {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(24, 20, 52, 0.9);
+}
+.tela[hidden] { display: none; }
+
+.cartao {
+  max-width: 520px;
+  padding: 2rem;
+  border-radius: 20px;
+  background: var(--papel);
+  color: var(--texto-escuro);
+}
+.cartao h2 { margin: 0 0 0.6rem; font-size: 1.7rem; }
+.cartao ul { padding-left: 1.2rem; margin: 0.8rem 0 1.4rem; }
+.cartao li { margin-bottom: 0.3rem; }
+
+/* ---------- Telas largas: cena e placa lado a lado, sem rolar a página ---------- */
+
+@media (min-width: 900px) {
+  .jogo { max-width: 1320px; padding: 0.8rem 1rem; }
+  .hud { margin-bottom: 0.7rem; }
+  .palco {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(380px, 440px);
+    gap: 1rem;
+    align-items: start;
+  }
+  .cena { height: clamp(280px, 56vh, 440px); }
+  .painel { margin-top: 0; min-height: 0; }
+  .placa { padding: 1.2rem 1.3rem; }
+  .enunciado { margin-bottom: 0.7rem; }
+  .formula { margin-bottom: 0.8rem; }
+  .interruptores { margin-bottom: 0.9rem; }
+}
+
+/* ---------- Telas estreitas ---------- */
+
+@media (max-width: 640px) {
+  .hud { grid-template-columns: 1fr auto; }
+  .distancia { grid-column: 1 / -1; order: 3; }
+  .placa { padding: 1.2rem 1.1rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition-duration: 0.01s !important; }
+}
