@@ -10,7 +10,7 @@ Jogo digital de Lógica Matemática. Um carro foge da polícia por uma rodovia c
 Requisitos: Python 3.10 ou superior.
 
 ```bash
-pip install -r requirements.txt
+py -m pip install -r requirements.txt
 python app.py
 ```
 
