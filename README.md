@@ -98,3 +98,15 @@ python -m unittest discover tests
 
 - **Demonstração com todos os níveis:** aumente `meta_vitoria` (por exemplo, 400) em `dados/config.json` para o jogo durar até o nível 5.
 - **Mais difícil ou mais fácil:** mude `aproximacao_m_por_s`, `penalidade_erro` e `bonus_por_tempo`. Não é preciso alterar o código.
+
+## Membros da equipe
+ 
+| Nome Completo | E-mail Institucional |
+|---|---|
+| Letícia Almeida Abreu de Siqueira  | laas2@cesar.school |
+| Letícia Dornas de Araújo  | lda2@cesar.school |
+| Maria Júlia Oliveira Dionísio  | mjod@cesar.school |
+| Maria Monalysa da Silva  | mms2@cesar.school |
+| Manuela Brayner Medeiros de Araújo  | mbma3@cesar.school |
+| Milena Siqueira Araújo  | msa4@cesar.school |
+| Rafaela Dubeux Godoy  | rdg@cesar.school |
