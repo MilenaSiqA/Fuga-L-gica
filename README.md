@@ -14,7 +14,7 @@ py -m pip install -r requirements.txt
 python app.py
 ```
 
-Abra **(https://fuga-logica.onrender.com)** no navegador e clique em *Começar a fuga*.
+Abra **https://fuga-logica.onrender.com** no navegador e clique em *Começar a fuga*.
 
 
 ## Como jogar
