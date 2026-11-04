@@ -14,15 +14,8 @@ py -m pip install -r requirements.txt
 python app.py
 ```
 
-Abra **http://localhost:5000** no navegador e clique em *Começar a fuga*.
+Abra **(https://fuga-logica.onrender.com)** no navegador e clique em *Começar a fuga*.
 
-## Publicar online (Render)
-
-- **Build Command:** `pip install -r requirements.txt`
-- **Start Command:** `gunicorn app:app --workers 1 --threads 4`
-- **Variável de ambiente:** `SECRET_KEY` com um texto aleatório
-
-Use **1 worker**: as partidas ficam na memória do servidor, e mais de um worker faria o jogo "esquecer" a partida.
 
 ## Como jogar
 
